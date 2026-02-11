@@ -21,6 +21,12 @@ export const signupUser = createAsyncThunk(
     }
 );
 
+export const getUserId = () => {
+    const user = getAuth().currentUser;
+    if (!user) throw new Error("User not authentication");
+    return user.uid;
+}
+
 export const loginUser = createAsyncThunk(
     'auth/login',
     async ({ email, password }: any, { rejectWithValue }) => {
