@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,9 +9,9 @@ import CustomInput from '../components/CustomInput';
 import MainButton from '../components/MainButton';
 import { colors } from '../theme/colors';
 import { RootState, AppDispatch } from '../redux/store';
-import { updateField, setLoading } from '../redux/authSlice';
+import { clearError } from '../redux/authSlice';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
-
+import { loginUser } from '../service/FirebaseAuthentication';
 
 type LoginScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 
@@ -21,29 +21,44 @@ type Props = {
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const { email, password, isLoading } = useSelector((state: RootState) => state.auth);
+
+    // Select Loading and Error state from Redux
+    const { isLoading, error } = useSelector((state: RootState) => state.auth);
+
+    // Use Local State for inputs (better performance for forms)
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
 
+    // Watch for Firebase errors
+    useEffect(() => {
+        if (error) {
+            Alert.alert("Login Failed", error);
+            dispatch(clearError());
+        }
+    }, [error, dispatch]);
+
     const handleLogin = () => {
-        // Implement actual login logic here
-        console.log('Logging in with:', email, password);
-        dispatch(setLoading(true));
-        // Simulate API call
-        setTimeout(() => dispatch(setLoading(false)), 2000);
+        if (!email || !password) {
+            Alert.alert("Missing Fields", "Please enter both email and password.");
+            return;
+        }
+        // Dispatch Firebase Login Action
+        dispatch(loginUser({ email, password }));
     };
 
     return (
         <ScreenWrapper>
             <Text style={styles.title}>Log in</Text>
-            <Text style={styles.subtitle}>Fresh Food Delivered.</Text>
+            <Text style={styles.subtitle}>Manage your tasks efficiently.</Text>
 
             <Text style={styles.label}>Email</Text>
             <CustomInput
                 iconName="email-outline"
                 placeholder="example@gmail.com"
                 value={email}
-                onChangeText={(value) => dispatch(updateField({ field: 'email', value }))}
+                onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
@@ -53,7 +68,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                 iconName="lock-outline"
                 placeholder="••••••••••••"
                 value={password}
-                onChangeText={(value) => dispatch(updateField({ field: 'password', value }))}
+                onChangeText={setPassword}
                 secureTextEntry={!isPasswordVisible}
                 rightIconName={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
                 onRightIconPress={() => setIsPasswordVisible(!isPasswordVisible)}

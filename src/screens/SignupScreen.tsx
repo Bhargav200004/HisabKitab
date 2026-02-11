@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,8 +8,9 @@ import CustomInput from '../components/CustomInput';
 import MainButton from '../components/MainButton';
 import { colors } from '../theme/colors';
 import { RootState, AppDispatch } from '../redux/store';
-import { updateField, setLoading, resetForm } from '../redux/authSlice';
+import { clearError } from '../redux/authSlice';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
+import { signupUser } from '../service/FirebaseAuthentication';
 
 type SignupScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Signup'>;
 
@@ -19,36 +20,45 @@ type Props = {
 
 const SignupScreen: React.FC<Props> = ({ navigation }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const { email, password, confirmPassword, isLoading } = useSelector((state: RootState) => state.auth);
+
+    const { isLoading, error } = useSelector((state: RootState) => state.auth);
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
+    useEffect(() => {
+        if (error) {
+            Alert.alert("Registration Failed", error);
+            dispatch(clearError());
+        }
+    }, [error, dispatch]);
+
     const handleSignup = () => {
-        if (password !== confirmPassword) {
-            Alert.alert("Passwords don't match");
+        if (!email || !password || !confirmPassword) {
+            Alert.alert("Missing Fields", "Please fill in all fields.");
             return;
         }
-        console.log('Signing up with:', email, password);
-        dispatch(setLoading(true));
-        // Simulate API call
-        setTimeout(() => {
-            dispatch(setLoading(false));
-            dispatch(resetForm());
-            navigation.navigate('Login');
-        }, 2000);
+        if (password !== confirmPassword) {
+            Alert.alert("Error", "Passwords do not match.");
+            return;
+        }
+
+        dispatch(signupUser({ email, password }));
     };
 
     return (
         <ScreenWrapper>
-            <Text style={styles.title}>Sing up</Text>
-            {/* Typo "Sing up" is intentional to match the design image provided */}
-            <Text style={styles.subtitle}>Fresh Food Delivered.</Text>
+            <Text style={styles.title}>Sign up</Text>
+            <Text style={styles.subtitle}>Create your HisabKitab account.</Text>
 
             <Text style={styles.label}>Email</Text>
             <CustomInput
                 iconName="email-outline"
                 placeholder="example@gmail.com"
                 value={email}
-                onChangeText={(value) => dispatch(updateField({ field: 'email', value }))}
+                onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
@@ -58,24 +68,20 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
                 iconName="lock-outline"
                 placeholder="••••••••••••"
                 value={password}
-                onChangeText={(value) => dispatch(updateField({ field: 'password', value }))}
+                onChangeText={setPassword}
                 secureTextEntry={!isPasswordVisible}
                 rightIconName={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
                 onRightIconPress={() => setIsPasswordVisible(!isPasswordVisible)}
             />
 
             <Text style={styles.label}>Confirm password</Text>
-            {/* Confirm password doesn't have an icon in the design, so we pass empty string/null if component supports it, or just don't pass it and let component handle it. 
-           Looking at design, it actually has no icon on left, but same style.
-       */}
             <View style={styles.noIconInputContainer}>
                 <CustomInput
-                    iconName="lock-outline"
-                    placeholder="••••••••••••" // Added placeholder so dots appear
+                    iconName="lock-check-outline"
+                    placeholder="••••••••••••"
                     value={confirmPassword}
-                    onChangeText={(value) => dispatch(updateField({ field: 'confirmPassword', value }))}
+                    onChangeText={setConfirmPassword}
                     secureTextEntry={true}
-                // REMOVED the 'style' prop here. It was breaking the layout.
                 />
             </View>
 
@@ -112,8 +118,6 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         fontWeight: '500',
     },
-    // The design for confirm password actually looks exactly like the password field above it.
-    // I will remove this special container and just use the standard input.
     noIconInputContainer: {
         marginBottom: 20
     },
