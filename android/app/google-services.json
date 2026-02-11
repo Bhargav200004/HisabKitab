@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1039777489179",
+    "project_id": "hisabkitab-b5f13",
+    "storage_bucket": "hisabkitab-b5f13.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039777489179:android:0504db3809a9437f8533be",
+        "android_client_info": {
+          "package_name": "com.hisabkitab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCppAj2QOCAHyrT5XP9pq6cgmPhIBq-YHc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
