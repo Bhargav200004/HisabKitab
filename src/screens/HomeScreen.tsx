@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Text } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Text, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -8,7 +8,7 @@ import TaskItem from '../components/TaskItem';
 import AddTaskModal from '../components/AddTaskModal';
 import { colors } from '../theme/colors';
 import { RootState, AppDispatch } from '../redux/store';
-import { addTask, toggleTaskCompletion, fetchTasks } from '../service/FirebaseFirestore';
+import { addTask, toggleTaskCompletion, fetchTasks, deleteTask } from '../service/FirebaseFirestore';
 import { Priority } from '../types/task';
 
 const HomeScreen = () => {
@@ -30,6 +30,24 @@ const HomeScreen = () => {
         dispatch(toggleTaskCompletion({ id, isCompleted: currentStatus }));
     };
 
+    const handleDelete = (id: string) => {
+        Alert.alert(
+            "Delete Task",
+            "Are you sure you want to delete this task?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => dispatch(deleteTask(id))
+                }
+            ]
+        );
+    };
+
     return (
         <View style={{ flex: 1 }}>
             <ScreenWrapper>
@@ -46,6 +64,7 @@ const HomeScreen = () => {
                             <TaskItem
                                 task={item}
                                 onToggle={() => handleToggle(item.id, item.isCompleted)}
+                                onDelete={handleDelete}
                             />
                         )}
                         contentContainerStyle={styles.listContent}

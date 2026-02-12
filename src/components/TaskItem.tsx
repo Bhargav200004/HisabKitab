@@ -7,6 +7,7 @@ import { Task, Priority } from '../types/task';
 interface TaskItemProps {
     task: Task;
     onToggle: (id: string) => void;
+    onDelete: (id: string) => void; // <--- Add this new prop
 }
 
 const getPriorityColor = (priority: Priority) => {
@@ -18,7 +19,7 @@ const getPriorityColor = (priority: Priority) => {
     }
 };
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onDelete }) => {
     return (
         <View style={styles.container}>
             {/* Left Checkbox */}
@@ -40,13 +41,19 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle }) => {
                         {task.description}
                     </Text>
                 ) : null}
+                <Text style={styles.dateText}>{task.date}</Text>
             </View>
 
-            {/* Right Priority */}
-            <View style={styles.priorityContainer}>
-                <Text style={[styles.priorityText, { color: getPriorityColor(task.priority) }]}>
-                    {task.priority}
-                </Text>
+            {/* Right Side: Priority & Delete */}
+            <View style={styles.rightContainer}>
+                <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(task.priority) }]}>
+                    <Text style={styles.priorityText}>{task.priority}</Text>
+                </View>
+
+                {/* Delete Button */}
+                <TouchableOpacity onPress={() => onDelete(task.id)} style={styles.deleteButton}>
+                    <Icon name="trash-can-outline" size={24} color={colors.error} />
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -60,7 +67,6 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 15,
         marginBottom: 10,
-        // Slight shadow for separation
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
@@ -88,13 +94,29 @@ const styles = StyleSheet.create({
         color: colors.textSecondary,
         marginTop: 2,
     },
-    priorityContainer: {
-        marginLeft: 10,
-        justifyContent: 'center',
+    dateText: {
+        fontSize: 10,
+        color: '#999',
+        marginTop: 4
+    },
+    rightContainer: {
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+        height: '100%'
+    },
+    priorityBadge: {
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 8,
+        marginBottom: 8
     },
     priorityText: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: 'bold',
+        color: colors.white
+    },
+    deleteButton: {
+        padding: 5
     }
 });
 
