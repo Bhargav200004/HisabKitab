@@ -1,97 +1,142 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# HisabKitab - Smart Todo & Finance Manager
 
-# Getting Started
+HisabKitab is a React Native mobile application designed to help users manage their daily tasks efficiently. It features a clean, modern UI inspired by minimalist designs and is powered by **Firebase** for backend services and **Redux Toolkit** for state management.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 📱 Features
 
-## Step 1: Start Metro
+### 🔐 User Authentication
+* **Sign Up:** Secure user registration with email and password.
+* **Log In:** Seamless login experience with persistent session management.
+* **Validation:** Real-time form validation (email format, password matching).
+* **Security:** Powered by Firebase Authentication.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### ✅ Todo List Management
+* **Create Tasks:** Add new tasks with a title, detailed description, priority level, date, and deadline.
+* **Priority System:** Categorize tasks as High (Red), Medium (Orange), or Low (Green) priority.
+* **Date Picker:** Interactive calendar integration for selecting dates.
+* **Real-time Sync:** All tasks are synced instantly across devices using Cloud Firestore.
+* **Task Completion:** Toggle tasks as "Done" with a visual strikethrough effect.
+* **Persistent Storage:** Data remains available even after restarting the app.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+---
 
-```sh
-# Using npm
-npm start
+## 🛠 Tech Stack
 
-# OR using Yarn
-yarn start
+* **Framework:** [React Native](https://reactnative.dev/) (CLI)
+* **Language:** [TypeScript](https://www.typescriptlang.org/)
+* **State Management:** [Redux Toolkit](https://redux-toolkit.js.org/)
+* **Backend:** [Firebase](https://firebase.google.com/) (Auth & Firestore)
+* **Navigation:** [React Navigation](https://reactnavigation.org/) (Stack)
+* **UI Components:** Custom components inspired by Pinterest minimalist designs.
+* **Icons:** React Native Vector Icons (MaterialCommunityIcons).
+
+---
+
+## 📂 Folder Structure
+
+The project follows a scalable and modular folder structure:
+
+```text
+src/
+  ├── components/        # Reusable UI components (buttons, inputs, cards)
+  │   ├── AddTaskModal.tsx
+  │   ├── CustomInput.tsx
+  │   ├── MainButton.tsx
+  │   ├── ScreenWrapper.tsx
+  │   └── TaskItem.tsx
+  │
+  ├── navigation/        # Navigation configuration
+  │   └── AuthNavigator.tsx
+  │
+  ├── redux/             # Global state management
+  │   ├── authSlice.ts   # Authentication logic (Login/Signup)
+  │   ├── todoSlice.ts   # Todo CRUD operations
+  │   └── store.ts       # Redux store configuration
+  │
+  ├── screens/           # Main application screens
+  │   ├── HomeScreen.tsx
+  │   ├── LoginScreen.tsx
+  │   └── SignupScreen.tsx
+  │
+  ├── theme/             # Styling constants
+  │   └── colors.ts
+  │
+  └── types/             # TypeScript interfaces
+      └── task.ts
+
 ```
 
-## Step 2: Build and run your app
+## Getting Started
+- Prerequisites
+    + Node.js & npm/yarn
+    + React Native CLI environment setup  (Android Studio / Xcode)
+    + A Firebase Project
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+#### Installation
+1. Clone the repository
 
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```Bash 
+git clone [https://github.com/your-username/HisabKitab.git](https://github.com/your-username/HisabKitab.git)
+cd HisabKitab
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+2. Install Dependencies
+```Bash 
+    npm install
+    # or
+    yarn install
 ```
 
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
+3. Install iOS Pods (Mac only)
+```Bash 
+cd ios && pod install && cd ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+4. Firebase Setup
+- Create a project on the Firebase Console.
+- Android: Download google-services.json and place it in android/app/.
+- iOS: Download GoogleService-Info.plist and add it to your Xcode project.
+- Enable Authentication (Email/Password provider).
+- Enable Cloud Firestore (Create database in test mode).
 
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+5. Run The App 
++ Android
+```Bash
+npx react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
++ IOS
+```Bash
+npx react-native run-ios
+```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## User Flow
+1. Registration:
+    + User opens the app and lands on the Sign Up screen (default).
+    + User enters Email, Password, and Confirmation.
+    + On success -> Firebase creates an account -> User is redirected to Home.
 
-## Step 3: Modify your app
+2. Login:
+    + Existing users navigate to Log In.
+    + On success -> Redux updates auth state -> App switches to Home Stack.
 
-Now that you have successfully run the app, let's make changes!
+3. Dashboard (Home):
+    + User sees a list of tasks fetched from Firestore.
+    + Clicking the "+" Floating Action Button opens the "Add Task" modal.
+    + User fills in details (Title, Priority, Date) and saves.
+    + The new task appears instantly in the list.
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## UI Reference
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+The User Interface was designed with a focus on freshness and simplicity, using a Green monochromatic color palette (#AEEEC2, #1E5E20) to evoke a sense of productivity and calm.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- Reference: Minimalist mobile form designs found on Pinterest.
+- Key Elements: Rounded corners, soft shadows, and card-based layouts.
 
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## State Management (Redux)
+We use Redux Toolkit to manage global state, keeping the UI consistent with the backend.
++ authSlice: Handles user sessions (user, isLoading, error). It listens to Firebase's onAuthStateChanged to keep users logged in even after restarting the app.
++ todoSlice: Handles task data.
+    - fetchTasks: Async thunk to pull data from Firestore.
+    - addTask: Pushes new task to Firestore and updates local state.
+    - toggleTask: Updates the isCompleted status in real-time.
